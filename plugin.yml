@@ -1,0 +1,12 @@
+name: Hofcraft
+main: net.yeticraft.xxtraineexx.hofcraft.Hofcraft
+version: 0.1
+authors: [XxTRAINEExX]
+
+commands:
+  hc:
+    description: Toggle BlockProtection on/off
+    usage: /<command>
+  hofcraft:
+    description: Add a player to your friends list
+    usage: /<command>
