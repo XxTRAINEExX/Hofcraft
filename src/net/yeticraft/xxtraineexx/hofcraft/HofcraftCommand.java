@@ -4,7 +4,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import java.util.List;
 
 public class HofcraftCommand implements CommandExecutor{
 
@@ -49,12 +48,10 @@ public class HofcraftCommand implements CommandExecutor{
 	    		sender.sendMessage(plugin.prefix + ChatColor.DARK_AQUA +  " /" + command.getName() + " CLASSES: Lists all current classes.");
 	    		break;
 	    	case CLASSES:
-	    		List<String> classes = plugin.classes;
+	    		
 	    		sender.sendMessage(plugin.prefix + "Available classes: ");
-	    		for (int i = 0; i < classes.size(); i++)
-	    		{
-	    			sender.sendMessage(plugin.prefix + classes.get(i));
-	    		}
+	    		sender.sendMessage(plugin.prefix + " Warrior");
+	    		sender.sendMessage(plugin.prefix + " Cleric");
 	    		break;
 
 	    	case UNKNOWN:
