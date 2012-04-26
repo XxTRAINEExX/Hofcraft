@@ -2,19 +2,28 @@ package net.yeticraft.xxtraineexx.hofcraft;
 
 public class HofPlayer {
 
-	String pClass = "undecided";
-	short pInt = 100;
-	short pRes = 100;
+	String pName;
+	String pClass;
+	int pInt;
+	int pRes;
+	
+	public HofPlayer (String incPlayer, String incClass, int incInt, int incRes){
+		pName = incPlayer;
+		pClass = incClass;
+		pInt = incInt;
+		pRes = incRes;
+		
+	}
 	
 	public String getpClass(){
 		return pClass;
 	}
 	
-	public short getInt(){
+	public int getInt(){
 		return pInt;
 	}
 	
-	public short getRes(){
+	public int getRes(){
 		return pRes;
 	}
 	

@@ -17,6 +17,8 @@ public class HofcraftCommand implements CommandExecutor{
 	enum SubCommand {
 		HELP,
 		CLASSES,
+		JOIN,
+		LEAVE,
 		UNKNOWN;
 		
 		private static SubCommand toSubCommand(String str) {
@@ -46,20 +48,86 @@ public class HofcraftCommand implements CommandExecutor{
 	    		sender.sendMessage(ChatColor.DARK_AQUA + "==================");
 	    		sender.sendMessage(plugin.prefix + ChatColor.DARK_AQUA + " /" + command.getName() + " HELP: Shows this help page");
 	    		sender.sendMessage(plugin.prefix + ChatColor.DARK_AQUA +  " /" + command.getName() + " CLASSES: Lists all current classes.");
+	    		sender.sendMessage(plugin.prefix + ChatColor.DARK_AQUA +  " /" + command.getName() + " JOIN <class>: Joins a given class.");
+	    		sender.sendMessage(plugin.prefix + ChatColor.DARK_AQUA +  " /" + command.getName() + " LEAVE <class>: Leaves a given class.");
 	    		break;
 	    	case CLASSES:
 	    		
 	    		sender.sendMessage(plugin.prefix + "Available classes: ");
-	    		sender.sendMessage(plugin.prefix + " Warrior");
-	    		sender.sendMessage(plugin.prefix + " Cleric");
+	    		
+	    		for (int i = 0; i < plugin.validClasses.size(); i++){
+	    			sender.sendMessage(plugin.prefix + plugin.validClasses.get(i));
+	    		}
+	    		
 	    		break;
 
+	    	case JOIN:
+	    		
+	    		if (args.length == 1)
+	    		{
+	    			sender.sendMessage("Please specify a class to join.");
+	    			return true;
+	    		}
+	    		if (joinClass(sender, args[1]))
+	    		{
+	    			sender.sendMessage("You are now a " + args[1] + ".");
+	    		}
+	    		
+	    		break;
+	    	case LEAVE:
+	    		
+	    		if (args.length == 1)
+	    		{
+	    			sender.sendMessage("Please specify a class to leave.");
+	    			return true;
+	    		}
+	    		if (leaveClass(sender, args[1]))
+	    		{
+	    			sender.sendMessage("You are no longer a " + args[1] + ".");
+	    		}
+	    		
+	    		break;
+	    		
 	    	case UNKNOWN:
 				sender.sendMessage("Unknown command. Use /hc HELP to list available commands.");
     	}
     	
 		return true;
+	
+		
+	
 	}
 	
+	public boolean joinClass(CommandSender sender, String pClass){
+		
+		// Did they enter a valid class?
+		if (!plugin.validClasses.contains(pClass.toLowerCase())){
+			sender.sendMessage("You didn't enter a valid class.");
+			return false;
+		}
+		
+		// Setting their class in the listener hashmap and saving out to the yaml file.
+		HofPlayer hofPlayer = plugin.myListener.activePlayers.get(sender.getName().toLowerCase());
+		hofPlayer.setpClass(pClass);
+		plugin.playerConfig.savePlayer(hofPlayer);
+		return true;
+		
+	}
+	
+	public boolean leaveClass(CommandSender sender, String pClass){
+		
+		// Did they enter a valid class?
+		if (!plugin.validClasses.contains(pClass.toLowerCase())){
+			sender.sendMessage("You didn't enter a valid class.");
+			return false;
+		}
+		
+		// Setting their class in the listener hashmap and saving out to the yaml file.
+		HofPlayer hofPlayer = plugin.myListener.activePlayers.get(sender.getName().toLowerCase());
+		hofPlayer.setpClass("undecided");
+		plugin.playerConfig.savePlayer(hofPlayer);
+		return true;
+		
+	}
 	
 }

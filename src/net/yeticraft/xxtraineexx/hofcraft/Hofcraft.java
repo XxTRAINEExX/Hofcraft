@@ -1,5 +1,7 @@
 package net.yeticraft.xxtraineexx.hofcraft;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandExecutor;
@@ -12,13 +14,18 @@ public class Hofcraft extends JavaPlugin{
 	public final Logger log = Logger.getLogger("Minecraft");
 	public String prefix = ChatColor.AQUA + "[HofCraft] " + ChatColor.WHITE;
 	public FileConfiguration config;
-	public final HofPlayerConfigHandler playerConfig = new HofPlayerConfigHandler(this);
-	
+	public HofPlayerConfigHandler playerConfig;
+	public List<String> validClasses;
+	public String defaultClass;
+	public int defaultInt;
+	public int defaultRes;
+	public HofListener myListener;
 	
 	
 	public void onEnable() {
 		
-		new HofListener(this);
+		myListener = new HofListener(this);
+		playerConfig = new HofPlayerConfigHandler(this);
 		PluginDescriptionFile pdffile = this.getDescription();
 		loadMainConfig();
 		playerConfig.loadPlayerConfig();
@@ -39,7 +46,29 @@ public class Hofcraft extends JavaPlugin{
 	public void loadMainConfig(){
 		// Read the config file
     	config = getConfig();
-    	// Future config checking goes here.
+    	validClasses = config.getStringList("classes");
+    	
+    	if ((validClasses == null) || (validClasses.size() == 0))
+    	{
+    		// Config file must be empty... lets generate a new one.
+    		log.info(prefix + "Configuration File not found. Generating default.");
+    		validClasses = new ArrayList<String>();
+    		validClasses.add("warrior");
+    		validClasses.add("cleric");
+    		config.set("defaultclass", "undecided");
+    		config.set("defaultint", (short)100);
+    		config.set("defaultres", (short)90);
+    		config.set("classes", validClasses);
+    		saveConfig();
+    	}
+    	else{
+    		log.info(prefix + "Existing Configuration file found, loading."); 
+    	}
+    	
+    	defaultClass = config.getString("defaultclass");
+    	defaultInt = config.getInt("defaultint");
+    	defaultRes = config.getInt("defaultres");
+    	
 	}
 
 }

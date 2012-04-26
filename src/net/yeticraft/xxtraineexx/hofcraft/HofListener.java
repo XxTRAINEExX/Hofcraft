@@ -1,6 +1,7 @@
 package net.yeticraft.xxtraineexx.hofcraft;
 
 
+import java.util.HashMap;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -28,8 +29,9 @@ import org.bukkit.event.server.PluginEnableEvent;
 
 public class HofListener implements Listener{
 
-public static Hofcraft plugin;
-	
+	public static Hofcraft plugin;
+	HashMap<String, HofPlayer> activePlayers = new HashMap<String, HofPlayer>();
+
 	public HofListener(Hofcraft plugin) {
 		plugin.getServer().getPluginManager().registerEvents(this, plugin);
 		HofListener.plugin = plugin;
@@ -40,19 +42,51 @@ public static Hofcraft plugin;
 		plugin.log.info(("Plugin detected: " + event.getPlugin().toString()));
 	}
 	
-	@EventHandler(priority = EventPriority.NORMAL)
-	public void onPlayerInteract(PlayerInteractEvent e) {
-		
-	}
 	
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerJoin(PlayerJoinEvent e) {
 		
+		String pName = e.getPlayer().getName().toLowerCase();
+		
+		// Check if they are in the player config
+		if (!plugin.playerConfig.hasPlayer(e.getPlayer())){
+			
+			// Ruh roh... looks like they arent in the config... lets load them some defaults.
+			HofPlayer newPlayer = new HofPlayer(pName, plugin.defaultClass, plugin.defaultInt, plugin.defaultRes);
+			activePlayers.put(pName, newPlayer);
+			plugin.playerConfig.savePlayer(newPlayer);
+			plugin.log.info(plugin.prefix + "New player added to playerconfig: " + pName);
+			return;
+			
+		}
+
+		// Loading up some player attributes hoss
+		String pClass = plugin.playerConfig.getPlayerClass(e.getPlayer());
+		int pInt = plugin.playerConfig.getPlayerInt(e.getPlayer());
+		int pRes = plugin.playerConfig.getPlayerRes(e.getPlayer());
+				
+		// Creating objects like a boss... this one will hold all them player attributes.
+		HofPlayer existingPlayer = new HofPlayer(pName, pClass,pInt,pRes);
+
+		// Lets get this object stored in a hashtable.. you know we going to call this later...
+		activePlayers.put(pName, existingPlayer);
+		
+		// Player loaded and ready to rock... lets rock out of here.
+		return;
 		
 	}
 	
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerQuit(PlayerQuitEvent e) {
+		
+		// I don't like them bosses lingering...
+		String pName = e.getPlayer().getName().toLowerCase();
+		activePlayers.remove(pName);
+		
+	}
+	
+	@EventHandler(priority = EventPriority.NORMAL)
+	public void onPlayerInteract(PlayerInteractEvent e) {
 		
 	}
 	
