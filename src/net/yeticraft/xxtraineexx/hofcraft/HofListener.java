@@ -2,6 +2,10 @@ package net.yeticraft.xxtraineexx.hofcraft;
 
 
 import java.util.HashMap;
+
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -144,7 +148,49 @@ public class HofListener implements Listener{
 	
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onEntityDamageByEntityEvent(EntityDamageByEntityEvent e) {	
+	
+		Entity wounded = e.getEntity();
+		Entity attacker = e.getDamager();
+		if (attacker instanceof Projectile) attacker = ((Projectile)attacker).getShooter();
+	
+		if (e.isCancelled()) return;
+		plugin.log.info("attack not cancelled");
 		
+		
+		if (attacker.equals(wounded)) return;
+		plugin.log.info("attacker was not also the wounded person");
+		
+		if (!(wounded instanceof Player)) return;
+		plugin.log.info("wounded person was a player");
+		
+		if (!(attacker instanceof Player)) return;
+		plugin.log.info("attacker person was a player");
+	
+		// 	We should be working with players... Lets cast things
+		Player attackPlayer = (Player)attacker;
+		Player woundedPlayer = (Player)wounded;
+		
+		attackPlayer.sendMessage("You are the attacker");
+		woundedPlayer.sendMessage("You are the wounded");
+		
+		attackPlayer.sendMessage("Initial Damage" + e.getDamage());
+		
+		// Pulling their data from the hashmap
+		HofPlayer hofAttacker = activePlayers.get(attackPlayer.getName().toLowerCase());
+		HofPlayer hofWounded = activePlayers.get(woundedPlayer.getName().toLowerCase());
+	
+		
+		// Warrior Modifier
+		if (hofAttacker.getpClass().equalsIgnoreCase("warrior")){
+			attackPlayer.sendMessage("you are a warrior");
+			int warriorDamage = e.getDamage() * 4;
+			attackPlayer.sendMessage("enhanced damage" + warriorDamage);
+			e.setDamage(warriorDamage);
+		}
+		
+		
+	
+	
 	}
 	
 	@EventHandler(priority = EventPriority.NORMAL)

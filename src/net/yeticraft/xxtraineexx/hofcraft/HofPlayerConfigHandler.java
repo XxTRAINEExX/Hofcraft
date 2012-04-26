@@ -115,7 +115,7 @@ public class HofPlayerConfigHandler {
 		 * Returns TRUE if the player is already in the playerConfig.
 		 */
 		
-		if (playerConfig.getString("players." + player.toString().toLowerCase()) != null){
+		if (playerConfig.getString("players." + player.getName().toLowerCase()) != null){
 			return true;
 		}
 		return false;
