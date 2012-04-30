@@ -3,7 +3,6 @@ package net.yeticraft.xxtraineexx.hofcraft;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -12,7 +11,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class Hofcraft extends JavaPlugin{
 
 	public final Logger log = Logger.getLogger("Minecraft");
-	public String prefix = ChatColor.AQUA + "[HofCraft] " + ChatColor.WHITE;
+	public String prefix = "[HofCraft] ";
 	public FileConfiguration config;
 	public HofPlayerConfigHandler playerConfig;
 	public List<String> validClasses;
@@ -28,7 +27,6 @@ public class Hofcraft extends JavaPlugin{
 		playerConfig = new HofPlayerConfigHandler(this);
 		PluginDescriptionFile pdffile = this.getDescription();
 		loadMainConfig();
-		playerConfig.loadPlayerConfig();
 		CommandExecutor HofcraftCommandExecutor = new HofcraftCommand(this);
 		getCommand("hofcraft").setExecutor(HofcraftCommandExecutor);
     	getCommand("hc").setExecutor(HofcraftCommandExecutor);  	

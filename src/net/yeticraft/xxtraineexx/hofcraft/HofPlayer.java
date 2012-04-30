@@ -15,6 +15,10 @@ public class HofPlayer {
 		
 	}
 	
+	public String getpName(){
+		return pName;
+	}
+	
 	public String getpClass(){
 		return pClass;
 	}
@@ -25,6 +29,11 @@ public class HofPlayer {
 	
 	public int getRes(){
 		return pRes;
+	}
+	
+	public boolean setpName(String incName){
+		pName = incName.toLowerCase();
+		return true;
 	}
 	
 	public boolean setpClass(String incClass){

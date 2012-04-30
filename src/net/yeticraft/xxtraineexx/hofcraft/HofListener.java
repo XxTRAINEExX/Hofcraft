@@ -50,30 +50,12 @@ public class HofListener implements Listener{
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerJoin(PlayerJoinEvent e) {
 		
-		String pName = e.getPlayer().getName().toLowerCase();
-		
-		// Check if they are in the player config
-		if (!plugin.playerConfig.hasPlayer(e.getPlayer())){
-			
-			// Ruh roh... looks like they arent in the config... lets load them some defaults.
-			HofPlayer newPlayer = new HofPlayer(pName, plugin.defaultClass, plugin.defaultInt, plugin.defaultRes);
-			activePlayers.put(pName, newPlayer);
-			plugin.playerConfig.savePlayer(newPlayer);
-			plugin.log.info(plugin.prefix + "New player added to playerconfig: " + pName);
-			return;
-			
-		}
-
-		// Loading up some player attributes hoss
-		String pClass = plugin.playerConfig.getPlayerClass(e.getPlayer());
-		int pInt = plugin.playerConfig.getPlayerInt(e.getPlayer());
-		int pRes = plugin.playerConfig.getPlayerRes(e.getPlayer());
-				
-		// Creating objects like a boss... this one will hold all them player attributes.
-		HofPlayer existingPlayer = new HofPlayer(pName, pClass,pInt,pRes);
+		// Loading the player.
+		HofPlayer hofPlayer = plugin.playerConfig.loadPlayer(e.getPlayer());
 
 		// Lets get this object stored in a hashtable.. you know we going to call this later...
-		activePlayers.put(pName, existingPlayer);
+		activePlayers.put(hofPlayer.pName, hofPlayer);
+		plugin.log.info(plugin.prefix + "Player added to hashmap: " + hofPlayer.pName);
 		
 		// Player loaded and ready to rock... lets rock out of here.
 		return;
@@ -85,7 +67,13 @@ public class HofListener implements Listener{
 		
 		// I don't like them bosses lingering...
 		String pName = e.getPlayer().getName().toLowerCase();
+		
+		// Not sure I want to save their config when they leave the game. Right now I'm saving it every time 
+		// they make a change. Leaving this commented for now.
+		// plugin.playerConfig.savePlayer(activePlayers.get(pName));
+		
 		activePlayers.remove(pName);
+		plugin.log.info(plugin.prefix + "Player removed from hashmap: " + pName);
 		
 	}
 	
@@ -151,21 +139,21 @@ public class HofListener implements Listener{
 	
 		Entity wounded = e.getEntity();
 		Entity attacker = e.getDamager();
+		
+		if (!(attacker instanceof Player)) return;
+		plugin.log.info("attacker person was a player");
+		
+		if (!(wounded instanceof Player)) return;
+		plugin.log.info("wounded person was a player");
+		
 		if (attacker instanceof Projectile) attacker = ((Projectile)attacker).getShooter();
 	
 		if (e.isCancelled()) return;
 		plugin.log.info("attack not cancelled");
 		
-		
 		if (attacker.equals(wounded)) return;
 		plugin.log.info("attacker was not also the wounded person");
 		
-		if (!(wounded instanceof Player)) return;
-		plugin.log.info("wounded person was a player");
-		
-		if (!(attacker instanceof Player)) return;
-		plugin.log.info("attacker person was a player");
-	
 		// 	We should be working with players... Lets cast things
 		Player attackPlayer = (Player)attacker;
 		Player woundedPlayer = (Player)wounded;
