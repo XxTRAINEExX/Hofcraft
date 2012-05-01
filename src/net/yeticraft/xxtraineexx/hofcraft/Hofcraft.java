@@ -53,6 +53,7 @@ public class Hofcraft extends JavaPlugin{
     		validClasses = new ArrayList<String>();
     		validClasses.add("warrior");
     		validClasses.add("cleric");
+    		validClasses.add("rogue");
     		config.set("defaultclass", "undecided");
     		config.set("defaultint", (short)100);
     		config.set("defaultres", (short)90);

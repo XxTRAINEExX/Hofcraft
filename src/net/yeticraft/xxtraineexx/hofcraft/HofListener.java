@@ -137,47 +137,45 @@ public class HofListener implements Listener{
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onEntityDamageByEntityEvent(EntityDamageByEntityEvent e) {	
 	
+		//defining wounded and attacker
 		Entity wounded = e.getEntity();
 		Entity attacker = e.getDamager();
 		
+		// Making sure the attacker is a player
 		if (!(attacker instanceof Player)) return;
-		plugin.log.info("attacker person was a player");
 		
+		// Making sure the wounded is a player
 		if (!(wounded instanceof Player)) return;
-		plugin.log.info("wounded person was a player");
-		
+
+		// Finding the attacker if this event was triggered by a projectile.
 		if (attacker instanceof Projectile) attacker = ((Projectile)attacker).getShooter();
 	
+		// Making sure the event hasnt been cancelled already
 		if (e.isCancelled()) return;
 		plugin.log.info("attack not cancelled");
 		
+		// Making sure the attacker didnt wound him/herself (like shooting an arrow up in the air and landing on their own head)
 		if (attacker.equals(wounded)) return;
 		plugin.log.info("attacker was not also the wounded person");
 		
-		// 	We should be working with players... Lets cast things
+		// 	I believe we've eliminated all irrelevant scenarios, this must be PVP. Let's get started
 		Player attackPlayer = (Player)attacker;
 		Player woundedPlayer = (Player)wounded;
-		
-		attackPlayer.sendMessage("You are the attacker");
-		woundedPlayer.sendMessage("You are the wounded");
-		
-		attackPlayer.sendMessage("Initial Damage" + e.getDamage());
 		
 		// Pulling their data from the hashmap
 		HofPlayer hofAttacker = activePlayers.get(attackPlayer.getName().toLowerCase());
 		HofPlayer hofWounded = activePlayers.get(woundedPlayer.getName().toLowerCase());
 	
+		// Determining how much damage and mitigation we are working with 
+		int attackerDamage = hofAttacker.getDamage(e.getDamage(), this, attackPlayer);
+		int woundedMitigation = hofWounded.getMitigation(woundedPlayer, this);
 		
-		// Warrior Modifier
-		if (hofAttacker.getpClass().equalsIgnoreCase("warrior")){
-			attackPlayer.sendMessage("you are a warrior");
-			int warriorDamage = e.getDamage() * 4;
-			attackPlayer.sendMessage("enhanced damage" + warriorDamage);
-			e.setDamage(warriorDamage);
-		}
+		// Subtracting attacker damage from wounded mitigation to determine final damage
+		int finalDamage = attackerDamage - woundedMitigation;
+		if (finalDamage < 0) finalDamage = 0;  
 		
-		
-	
+		// set the final damage and let it rain
+		e.setDamage(finalDamage);
 	
 	}
 	
