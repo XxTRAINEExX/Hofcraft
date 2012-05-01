@@ -67,11 +67,6 @@ public class HofListener implements Listener{
 		
 		// I don't like them bosses lingering...
 		String pName = e.getPlayer().getName().toLowerCase();
-		
-		// Not sure I want to save their config when they leave the game. Right now I'm saving it every time 
-		// they make a change. Leaving this commented for now.
-		// plugin.playerConfig.savePlayer(activePlayers.get(pName));
-		
 		activePlayers.remove(pName);
 		plugin.log.info(plugin.prefix + "Player removed from hashmap: " + pName);
 		
@@ -152,13 +147,11 @@ public class HofListener implements Listener{
 	
 		// Making sure the event hasnt been cancelled already
 		if (e.isCancelled()) return;
-		plugin.log.info("attack not cancelled");
 		
 		// Making sure the attacker didnt wound him/herself (like shooting an arrow up in the air and landing on their own head)
 		if (attacker.equals(wounded)) return;
-		plugin.log.info("attacker was not also the wounded person");
 		
-		// 	I believe we've eliminated all irrelevant scenarios, this must be PVP. Let's get started
+		// 	I believe we've eliminated all irrelevant scenarios, this must be PVP. Let's cast the entities to players.
 		Player attackPlayer = (Player)attacker;
 		Player woundedPlayer = (Player)wounded;
 		
@@ -166,12 +159,38 @@ public class HofListener implements Listener{
 		HofPlayer hofAttacker = activePlayers.get(attackPlayer.getName().toLowerCase());
 		HofPlayer hofWounded = activePlayers.get(woundedPlayer.getName().toLowerCase());
 	
-		// Determining how much damage and mitigation we are working with 
-		int attackerDamage = hofAttacker.getDamage(e.getDamage(), this, attackPlayer);
-		int woundedMitigation = hofWounded.getMitigation(woundedPlayer, this);
+		boolean healAllowed = true;
+		int warriorMitigation = 0;
+		int rogueDamage = 0;
+		int clericHeal = 0;
+				
+		// Determining if rogue damage should be applied
+		if (hofAttacker.getpClass().equalsIgnoreCase("rogue")){
+
+			HofRogue rogue = new HofRogue();
+			rogueDamage = rogue.getDamage(this, attackPlayer);
+
+		}
 		
-		// Subtracting attacker damage from wounded mitigation to determine final damage
-		int finalDamage = attackerDamage - woundedMitigation;
+		// Determining if warrior mitigation should be applied
+		if (hofWounded.getpClass().equalsIgnoreCase("warrior")){
+
+			HofWarrior warrior = new HofWarrior();
+			warriorMitigation = warrior.getMitigation(this, woundedPlayer);
+			healAllowed=false;
+
+		}
+		
+		// Determining if cleric healing should be applied
+		if (hofWounded.getpClass().equalsIgnoreCase("cleric") && healAllowed){
+
+			HofCleric cleric = new HofCleric();
+			clericHeal = cleric.getHeal(this, woundedPlayer);
+					
+		}
+		
+		// applying all of the modifiers to get the final damage. If we end up less than 0 we correct it.
+		int finalDamage = (e.getDamage() + rogueDamage) - warriorMitigation - clericHeal;
 		if (finalDamage < 0) finalDamage = 0;  
 		
 		// set the final damage and let it rain
