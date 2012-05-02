@@ -3,7 +3,7 @@ package net.yeticraft.xxtraineexx.hofcraft;
 import java.util.Random;
 import org.bukkit.entity.Player;
 
-public class HofRogue {
+public class HofRogue implements IHofPlayerClass {
 
 	
 public int getDamage(HofListener listener, Player attacker){
@@ -26,6 +26,12 @@ public int getRandom(){
 	Random randomGenerator = new Random();
 	 int randomInt = randomGenerator.nextInt(100);
 	 return randomInt;
+}
+
+@Override
+public int getMitigation(HofListener listener, Player wounded) {
+	// TODO Auto-generated method stub
+	return 0;
 }
 	
 }

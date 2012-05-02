@@ -3,9 +3,9 @@ package net.yeticraft.xxtraineexx.hofcraft;
 import java.util.Random;
 import org.bukkit.entity.Player;
 
-public class HofWarrior {
+public class HofWarrior implements IHofPlayerClass {
 
-public int getMitigation(HofListener  listener, Player wounded){
+public int getMitigation(HofListener listener, Player wounded){
 		
 	// HofPlayer hofWarrior = listener.activePlayers.get(wounded.getName().toLowerCase());
 	int mitigation = 0;
@@ -25,5 +25,12 @@ public int getMitigation(HofListener  listener, Player wounded){
 		 int randomInt = randomGenerator.nextInt(100);
 		 return randomInt;
 	}
+
+	@Override
+	public int getDamage(HofListener listener, Player attacker) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 	
 }

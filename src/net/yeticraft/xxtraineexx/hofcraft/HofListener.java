@@ -49,14 +49,25 @@ public class HofListener implements Listener{
 	
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerJoin(PlayerJoinEvent e) {
-		
 		// Loading the player.
 		HofPlayer hofPlayer = plugin.playerConfig.loadPlayer(e.getPlayer());
 
 		// Lets get this object stored in a hashtable.. you know we going to call this later...
 		activePlayers.put(hofPlayer.pName, hofPlayer);
 		plugin.log.info(plugin.prefix + "Player added to hashmap: " + hofPlayer.pName);
-		
+		switch(hofPlayer.getpClass().toLowerCase())
+		{
+		case "rogue":
+			hofPlayer.myClass = new HofRogue();
+			break;
+		case "cleric":
+			hofPlayer.myClass = new HofCleric();
+			break;
+		case "warrior":
+			hofPlayer.myClass = new HofWarrior();
+			break;
+		}
+
 		// Player loaded and ready to rock... lets rock out of here.
 		return;
 		
@@ -158,39 +169,17 @@ public class HofListener implements Listener{
 		// Pulling their data from the hashmap
 		HofPlayer hofAttacker = activePlayers.get(attackPlayer.getName().toLowerCase());
 		HofPlayer hofWounded = activePlayers.get(woundedPlayer.getName().toLowerCase());
-	
+		
 		boolean healAllowed = true;
-		int warriorMitigation = 0;
-		int rogueDamage = 0;
-		int clericHeal = 0;
 				
-		// Determining if rogue damage should be applied
-		if (hofAttacker.getpClass().equalsIgnoreCase("rogue")){
-
-			HofRogue rogue = new HofRogue();
-			rogueDamage = rogue.getDamage(this, attackPlayer);
-
-		}
+		int damage = hofAttacker.myClass.getDamage(this, attackPlayer);
+		int mitigation = hofWounded.myClass.getMitigation(this, woundedPlayer);
 		
-		// Determining if warrior mitigation should be applied
-		if (hofWounded.getpClass().equalsIgnoreCase("warrior")){
-
-			HofWarrior warrior = new HofWarrior();
-			warriorMitigation = warrior.getMitigation(this, woundedPlayer);
-			healAllowed=false;
-
-		}
-		
-		// Determining if cleric healing should be applied
-		if (hofWounded.getpClass().equalsIgnoreCase("cleric") && healAllowed){
-
-			HofCleric cleric = new HofCleric();
-			clericHeal = cleric.getHeal(this, woundedPlayer);
-					
-		}
+		//ternary operator ?  says for:  x ? y : z --- If x then y else z.  It's just more concise.
+		int beneficial = healAllowed ? hofWounded.getHealedByNearbyCleric(this, woundedPlayer) : 0;
 		
 		// applying all of the modifiers to get the final damage. If we end up less than 0 we correct it.
-		int finalDamage = (e.getDamage() + rogueDamage) - warriorMitigation - clericHeal;
+		int finalDamage = e.getDamage() + damage - mitigation - beneficial;
 		if (finalDamage < 0) finalDamage = 0;  
 		
 		// set the final damage and let it rain
