@@ -1,18 +1,14 @@
 package net.yeticraft.xxtraineexx.hofcraft;
 
-import java.util.Random;
 import org.bukkit.entity.Player;
 
-public class HofCleric implements IHofPlayerClass {
+public class HofCleric extends HofPlayerClassBase implements IHofPlayerClass {
 	
-	// This method returns a random int from 0-99. I will use this to determine successful use of skills.
-	public int getRandom()
+	public HofCleric(HofPlayer player)
 	{
-		 Random randomGenerator = new Random();
-		 int randomInt = randomGenerator.nextInt(100);
-		 return randomInt;
+		this.player = player;
+		this.chanceModifier = 30; //Eventually this will be set based upon teh player object and the cleric object stats
 	}
-	
 	@Override
 	public int getDamage(HofListener listener, Player attacker) 
 	{
@@ -20,12 +16,17 @@ public class HofCleric implements IHofPlayerClass {
 		return 0;
 	}
 	
-	
 	@Override
 	public int getMitigation(HofListener listener, Player wounded) 
 	{
 		// TODO Auto-generated method stub
 		return 0;
 	}
-	
+
+	@Override
+	public int getBeneficialAdjustment(HofListener listener, Player helper) {
+		// TODO Create content here for determining the size of the cleric's heal.  This way this can scale 
+		// with level, presence of items, level of spells, etc.
+		return 2;
+	}	
 }

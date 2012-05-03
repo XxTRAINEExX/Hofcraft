@@ -58,13 +58,13 @@ public class HofListener implements Listener{
 		switch(hofPlayer.getpClass().toLowerCase())
 		{
 		case "rogue":
-			hofPlayer.myClass = new HofRogue();
+			hofPlayer.myClass = new HofRogue(hofPlayer);
 			break;
 		case "cleric":
-			hofPlayer.myClass = new HofCleric();
+			hofPlayer.myClass = new HofCleric(hofPlayer);
 			break;
 		case "warrior":
-			hofPlayer.myClass = new HofWarrior();
+			hofPlayer.myClass = new HofWarrior(hofPlayer);
 			break;
 		}
 
